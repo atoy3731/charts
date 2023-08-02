@@ -38,9 +38,7 @@ jobs:
           tar zxf helm-v3.12.2-linux-amd64.tar.gz
           chmod +x linux-amd64/helm
           mv linux-amd64/helm /usr/local/bin/helm
-          curl -O https://github.com/jqlang/jq/releases/download/jq-1.5/jq-linux64 >/dev/null 2>&1
-          chmod +x jq-linux64
-          mv jq-linux64 /usr/local/bin/jq
+          apt-get install -y jq >/dev/null 2>&1
 
           cd $curdir
           cat README.md
@@ -69,8 +67,6 @@ jobs:
                   echo "====================================================="
                   echo "Release/tag exists for '$chart_tag'. Updating asset.."
                   echo "====================================================="
-                  which jq
-                  echo '{"boop":"beep"}' | jq -r '.boop'
                   curl -S -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/atoy3731/charts/releases/tags/$chart_tag 2>/dev/null | jq -r ".assets[]"
                   existing_asset_id=$(curl -S -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/atoy3731/charts/releases/tags/$chart_tag 2>/dev/null | jq -r ".assets[] | select(.name==\"$chart_tag.tgz\")" | jq -r '.id')
                   echo "$existing_asset_id"
