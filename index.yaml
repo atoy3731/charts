@@ -2,11 +2,11 @@ apiVersion: v1
 entries:
   openwebrx:
   - apiVersion: v2
-    created: "2023-08-02T18:46:54.821211999Z"
+    created: "2023-08-02T18:48:01.198660319Z"
     description: Helm chart for deploying OpenWebRX
-    digest: d4db649afa500b4332465e1200af99c0b93463bc19c27d5265556cca4da37dfe
+    digest: 10367080dc69aa2c9ef3af3a8ec1f87bce0c88576931ac2c24c12017cce8dd7f
     name: openwebrx
     urls:
     - https://github.com/atoy3731/charts/releases/download/openwebrx-0.1.0/openwebrx-0.1.0.tgz
     version: 0.1.0
-generated: "2023-08-02T18:46:54.82058178Z"
+generated: "2023-08-02T18:48:01.19794692Z"
