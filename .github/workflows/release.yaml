@@ -25,7 +25,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
           ref: main
 
       - name: Create releases
@@ -47,6 +46,7 @@ jobs:
 
           pwd
           ls -la
+          git remote -v
           git branch
 
           for chart_yaml in $(find . -name 'Chart.yaml'); do
