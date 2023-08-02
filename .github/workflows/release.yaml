@@ -69,8 +69,9 @@ jobs:
                   echo "====================================================="
                   echo "Release/tag exists for '$chart_tag'. Updating asset.."
                   echo "====================================================="
-                  curl -S -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/atoy3731/charts/releases/tags/$chart_tag
+                  curl -S -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/atoy3731/charts/releases/tags/$chart_tag 2>/dev/null | /tmp/jq -r ".assets[]
                   existing_asset_id=$(curl -S -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/atoy3731/charts/releases/tags/$chart_tag 2>/dev/null | /tmp/jq -r ".assets[] | select(.name==\"$chart_tag.tgz\")" | /tmp/jq -r '.id')
+                  echo "$existing_asset_id"
                   curl -S -H "Authorization: Bearer $GITHUB_TOKEN" -X DELETE https://api.github.com/repos/atoy3731/charts/releases/assets/$existing_asset_id 2>/dev/null
                   /tmp/helm package -d /tmp $chart_dir
                   chart_tar="$chart_tag.tgz"
