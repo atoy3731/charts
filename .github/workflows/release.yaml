@@ -100,7 +100,7 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-          cp index/index.yaml ./index.yaml
+          cp $GITHUB_WORKSPACE/index/index.yaml ./index.yaml
           git add index.yaml
           git commit -m "Updated index.yaml @ $(date '+%Y-%m-%dT%T.%3N')"
           git push origin pages
