@@ -46,13 +46,15 @@ jobs:
 
           cd $curdir
 
+          echo "$GITHUB_"
+
           for chart_yaml in $(find . -name 'Chart.yaml'); do
               chart_dir=$(dirname $chart_yaml)
               chart_name=$(helm show chart "$chart_dir" | grep 'name:' | awk '{ print $2 }')
               chart_version=$(helm show chart "$chart_dir" | grep 'version:' | awk '{ print $2 }')
               chart_tag="$chart_name-$chart_version"
 
-              if [[ $(curl -s -o /dev/null -H "Authorization: Bearer $GITHUB_TOKEN" -w "%{http_code}" https://api.github.com/repos/$GITHUB_REPOSITORY_OWNER/$GITHUB_REPOSITORY_ID/releases/tags/$chart_tag) == "404" ]]; then
+              if [[ $(curl -s -o /dev/null -H "Authorization: Bearer $GITHUB_TOKEN" -w "%{http_code}" https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/$chart_tag) == "404" ]]; then
                   echo ""
                   echo "======================================="
                   echo "Creating tag/release for '$chart_tag'.."
@@ -61,10 +63,10 @@ jobs:
                   chart_tar="$chart_tag.tgz"
                   git tag "$chart_tag"
                   git push origin tags/$chart_tag
-                  release_response=$(curl -S -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GITHUB_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/$GITHUB_REPOSITORY_OWNER/$GITHUB_REPOSITORY_ID/releases -d "{\"tag_name\":\"$chart_tag\",\"name\":\"$chart_tag\",\"body\":\"Chart release for '$chart_tag'.\",\"draft\":false,\"prerelease\":false,\"generate_release_notes\":false}" 2>/dev/null)
+                  release_response=$(curl -S -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GITHUB_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/$GITHUB_REPOSITORY/releases -d "{\"tag_name\":\"$chart_tag\",\"name\":\"$chart_tag\",\"body\":\"Chart release for '$chart_tag'.\",\"draft\":false,\"prerelease\":false,\"generate_release_notes\":false}" 2>/dev/null)
                   upload_url=$(echo $release_response | jq -r '.url' | sed 's/api/uploads/g')
                   asset_response=$(curl -S -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GITHUB_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" -H "Content-Type: $(file -b --mime-type /tmp/charts/$chart_tar)" "$upload_url/assets?name=$chart_tar" --data-binary "@/tmp/charts/$chart_tar" 2>/dev/null)
-                  asset_download_url="https://github.com/$GITHUB_REPOSITORY_OWNER/$GITHUB_REPOSITORY_ID/releases/download/$chart_tag"
+                  asset_download_url="https://github.com/$GITHUB_REPOSITORY/releases/download/$chart_tag"
                   helm repo index /tmp/charts --url $asset_download_url --merge index.yaml
                   rm -f /tmp/charts/$chart_tar
               else
@@ -72,13 +74,13 @@ jobs:
                   echo "====================================================="
                   echo "Release/tag exists for '$chart_tag'. Updating asset.."
                   echo "====================================================="
-                  existing_asset_id=$(curl -S -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/$GITHUB_REPOSITORY_OWNER/$GITHUB_REPOSITORY_ID/releases/tags/$chart_tag 2>/dev/null | jq -r ".assets[] | select(.name==\"$chart_tag.tgz\")" | jq -r '.id')
-                  curl -S -H "Authorization: Bearer $GITHUB_TOKEN" -X DELETE https://api.github.com/repos/$GITHUB_REPOSITORY_OWNER/$GITHUB_REPOSITORY_ID/releases/assets/$existing_asset_id 2>/dev/null
+                  existing_asset_id=$(curl -S -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/$chart_tag 2>/dev/null | jq -r ".assets[] | select(.name==\"$chart_tag.tgz\")" | jq -r '.id')
+                  curl -S -H "Authorization: Bearer $GITHUB_TOKEN" -X DELETE https://api.github.com/repos/$GITHUB_REPOSITORY/releases/assets/$existing_asset_id 2>/dev/null
                   helm package -d /tmp/charts $chart_dir
                   chart_tar="$chart_tag.tgz"
-                  upload_url=$(curl -S -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/$GITHUB_REPOSITORY_OWNER/$GITHUB_REPOSITORY_ID/releases/tags/$chart_tag 2>/dev/null | jq -r '.url' | sed 's/api/uploads/g')
+                  upload_url=$(curl -S -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/$chart_tag 2>/dev/null | jq -r '.url' | sed 's/api/uploads/g')
                   asset_response=$(curl -S -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GITHUB_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" -H "Content-Type: $(file -b --mime-type /tmp/charts/$chart_tar)" "$upload_url/assets?name=$chart_tar" --data-binary "@/tmp/charts/$chart_tar" 2>/dev/null)
-                  asset_download_url="https://github.com/$GITHUB_REPOSITORY_OWNER/$GITHUB_REPOSITORY_ID/releases/download/$chart_tag"
+                  asset_download_url="https://github.com/$GITHUB_REPOSITORY/releases/download/$chart_tag"
                   helm repo index /tmp/charts --url $asset_download_url --merge index.yaml
                   rm -f /tmp/charts/$chart_tar
               fi
