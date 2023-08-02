@@ -31,6 +31,9 @@ jobs:
         run: |
           curdir=$(pwd)/working
 
+          mkdir -p /tmp/charts
+          mv $HOME/index_file/index.yaml /tmp/charts/index.yaml
+
           cd /tmp
           curl -S -O https://get.helm.sh/helm-v3.12.2-linux-amd64.tar.gz >/dev/null 2>&1
           tar zxf helm-v3.12.2-linux-amd64.tar.gz
@@ -38,8 +41,6 @@ jobs:
           sudo mv linux-amd64/helm /usr/local/bin/helm
           sudo apt-get install -y jq
 
-          mkdir -p /tmp/charts
-          mv $HOME/index/index.yaml /tmp/charts/index.yaml
           cd $curdir
 
           for chart_yaml in $(find . -name 'Chart.yaml'); do
