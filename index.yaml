@@ -11,12 +11,22 @@ entries:
     urls:
     - https://github.com/atoy3731/charts/releases/download/kubeinflight-0.1.13-dev/kubeinflight-0.1.13-dev.tgz
     version: 0.1.13
+  - apiVersion: v2
+    appVersion: 1.19.2
+    created: "2023-08-02T20:16:14.162064608Z"
+    description: A Helm chart for Kubernetes
+    digest: 8ecb73647786d4cab440758eff26b28ff42a04f3dfe5bd54b22e4161a05ec269
+    name: kubeinflight
+    type: application
+    urls:
+    - https://github.com/atoy3731/charts/releases/download/kubeinflight-0.1.13-dev/kubeinflight-0.1.13-dev.tgz
+    version: 0.1.13-dev
   kubeups:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2023-08-02T19:09:58.944846812Z"
+    created: "2023-08-02T20:16:11.782905157Z"
     description: A Helm chart for Kubernetes
-    digest: 93c318bd8f5038e9f05dfbba3ec8f0905d0c58bf1be84bd9606a1ccee85b26a0
+    digest: b1bb9ad8f437394c0c09e893e708be3b257d1f64e7a7179b7627ecf2eccea47b
     name: kubeups
     type: application
     urls:
@@ -24,11 +34,11 @@ entries:
     version: 0.1.0
   openwebrx:
   - apiVersion: v2
-    created: "2023-08-02T19:10:03.221769788Z"
+    created: "2023-08-02T20:16:16.526996236Z"
     description: Helm chart for deploying OpenWebRX
-    digest: 8468bb28eefe6e47b9a46204fa51278fe7f275580dfd16207f9ddd5309a5ba5f
+    digest: 30aceab52eb3161768d7d92c3899a2adabab984cea2243d737c4a0886d69f348
     name: openwebrx
     urls:
     - https://github.com/atoy3731/charts/releases/download/openwebrx-0.1.0/openwebrx-0.1.0.tgz
     version: 0.1.0
-generated: "2023-08-02T19:10:03.220481839Z"
+generated: "2023-08-02T20:16:16.526124529Z"
