@@ -43,6 +43,7 @@ jobs:
 
           pwd
           ls -la
+          git branch
 
           for chart_yaml in $(find . -name 'Chart.yaml'); do
               chart_dir=$(dirname $chart_yaml)
