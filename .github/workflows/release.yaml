@@ -37,48 +37,48 @@ jobs:
           curl -S -O https://get.helm.sh/helm-v3.12.2-linux-amd64.tar.gz >/dev/null 2>&1
           tar zxf helm-v3.12.2-linux-amd64.tar.gz
           chmod +x linux-amd64/helm
-          mv linux-amd64/helm /tmp/helm
+          mv linux-amd64/helm /usr/local/bin/helm
           curl -O https://github.com/jqlang/jq/releases/download/jq-1.5/jq-linux64 >/dev/null 2>&1
           chmod +x jq-linux64
-          mv jq-linux64 /tmp/jq
+          mv jq-linux64 /usr/local/bin/jq
 
           cd $curdir
           cat README.md
 
           for chart_yaml in $(find . -name 'Chart.yaml'); do
               chart_dir=$(dirname $chart_yaml)
-              chart_name=$(/tmp/helm show chart "$chart_dir" | grep 'name:' | awk '{ print $2 }')
-              chart_version=$(/tmp/helm show chart "$chart_dir" | grep 'version:' | awk '{ print $2 }')
+              chart_name=$(helm show chart "$chart_dir" | grep 'name:' | awk '{ print $2 }')
+              chart_version=$(helm show chart "$chart_dir" | grep 'version:' | awk '{ print $2 }')
               chart_tag="$chart_name-$chart_version"
               if [[ $(curl -s -o /dev/null -H "Authorization: Bearer $GITHUB_TOKEN" -w "%{http_code}" https://api.github.com/repos/atoy3731/charts/releases/tags/$chart_tag) == "404" ]]; then
                   echo ""
                   echo "======================================="
                   echo "Creating tag/release for '$chart_tag'.."
                   echo "======================================="
-                  /tmp/helm package -d /tmp $chart_dir
+                  helm package -d /tmp $chart_dir
                   chart_tar="$chart_tag.tgz"
                   git tag "$chart_tag"
                   git push origin tags/$chart_tag
                   release_response=$(curl -S -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GITHUB_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/atoy3731/charts/releases -d "{\"tag_name\":\"$chart_tag\",\"name\":\"$chart_tag\",\"body\":\"Chart release for '$chart_tag'.\",\"draft\":false,\"prerelease\":false,\"generate_release_notes\":false}" 2>/dev/null)
-                  upload_url=$(echo $release_response | /tmp/jq -r '.url' | sed 's/api/uploads/g')
+                  upload_url=$(echo $release_response | jq -r '.url' | sed 's/api/uploads/g')
                   asset_response=$(curl -S -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GITHUB_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" -H "Content-Type: $(file -b --mime-type /tmp/$chart_tar)" "$upload_url/assets?name=$chart_tar" --data-binary "@/tmp/$chart_tar" 2>/dev/null)
-                  asset_download_url=$(echo $asset_response | /tmp/jq -r '.browser_download_url')
-                  /tmp/helm repo index /tmp --url $asset_download_url --merge index.yaml
+                  asset_download_url=$(echo $asset_response | jq -r '.browser_download_url')
+                  helm repo index /tmp --url $asset_download_url --merge index.yaml
               else
                   echo ""
                   echo "====================================================="
                   echo "Release/tag exists for '$chart_tag'. Updating asset.."
                   echo "====================================================="
-                  /tmp/jq --help
-                  curl -S -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/atoy3731/charts/releases/tags/$chart_tag 2>/dev/null | /tmp/jq -r ".assets[]"
-                  existing_asset_id=$(curl -S -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/atoy3731/charts/releases/tags/$chart_tag 2>/dev/null | /tmp/jq -r ".assets[] | select(.name==\"$chart_tag.tgz\")" | /tmp/jq -r '.id')
+                  jq --help
+                  curl -S -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/atoy3731/charts/releases/tags/$chart_tag 2>/dev/null | jq -r ".assets[]"
+                  existing_asset_id=$(curl -S -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/atoy3731/charts/releases/tags/$chart_tag 2>/dev/null | jq -r ".assets[] | select(.name==\"$chart_tag.tgz\")" | jq -r '.id')
                   echo "$existing_asset_id"
                   curl -S -H "Authorization: Bearer $GITHUB_TOKEN" -X DELETE https://api.github.com/repos/atoy3731/charts/releases/assets/$existing_asset_id 2>/dev/null
-                  /tmp/helm package -d /tmp $chart_dir
+                  helm package -d /tmp $chart_dir
                   chart_tar="$chart_tag.tgz"
-                  upload_url=$(curl -S -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/atoy3731/charts/releases/tags/$chart_tag 2>/dev/null | /tmp/jq -r '.url' | sed 's/api/uploads/g')
+                  upload_url=$(curl -S -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/atoy3731/charts/releases/tags/$chart_tag 2>/dev/null | jq -r '.url' | sed 's/api/uploads/g')
                   asset_response=$(curl -S -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GITHUB_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" -H "Content-Type: $(file -b --mime-type /tmp/$chart_tar)" "$upload_url/assets?name=$chart_tar" --data-binary "@/tmp/$chart_tar" 2>/dev/null)
-                  asset_download_url=$(echo $asset_response | /tmp/jq -r '.browser_download_url')
-                  /tmp/helm repo index /tmp --url $asset_download_url --merge index.yaml
+                  asset_download_url=$(echo $asset_response | jq -r '.browser_download_url')
+                  helm repo index /tmp --url $asset_download_url --merge index.yaml
               fi
           done
