@@ -31,9 +31,6 @@ jobs:
         run: |
           curdir=$(pwd)/working
 
-          ls -la
-          pwd
-
           mkdir -p /tmp/charts
 
           cd /tmp
@@ -44,8 +41,6 @@ jobs:
           sudo apt-get install -y jq
 
           cd $curdir
-
-          cat $GITHUB_WORKSPACE/index/index.yaml
 
           for chart_yaml in $(find . -name 'Chart.yaml'); do
               chart_dir=$(dirname $chart_yaml)
@@ -85,18 +80,16 @@ jobs:
                   mv /tmp/charts/index.yaml $GITHUB_WORKSPACE/index/index.yaml
                   rm -f /tmp/charts/$chart_tar
               fi
-
-              cat $GITHUB_WORKSPACE/index/index.yaml
           done
-
-          
 
       - uses: actions/checkout@v3
         with:
           ref: pages
+          path: commit
 
       - name: Commit index.yaml
         run: |
+          cd commit
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
