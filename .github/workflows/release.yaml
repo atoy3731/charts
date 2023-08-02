@@ -38,7 +38,6 @@ jobs:
           tar zxf helm-v3.12.2-linux-amd64.tar.gz
           chmod +x linux-amd64/helm
           sudo mv linux-amd64/helm /usr/local/bin/helm
-          sudo apt-get install -y jq
 
           cd $curdir
 
