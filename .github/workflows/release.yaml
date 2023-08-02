@@ -21,6 +21,8 @@ jobs:
         run: |
           mkdir ./.working/
           cp ./index.yaml ./.working/index.yaml
+          cp ./index.yaml /tmp/index.yaml
+          cat /tmp/index.yaml
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -33,6 +35,7 @@ jobs:
         run: |
           curdir=$(pwd)
           cd /tmp
+          ls -la
           curl -S -O https://get.helm.sh/helm-v3.12.2-linux-amd64.tar.gz >/dev/null 2>&1
           tar zxf helm-v3.12.2-linux-amd64.tar.gz
           chmod +x linux-amd64/helm
