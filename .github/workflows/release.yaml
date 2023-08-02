@@ -69,7 +69,7 @@ jobs:
                   echo "====================================================="
                   echo "Release/tag exists for '$chart_tag'. Updating asset.."
                   echo "====================================================="
-                  jq --help
+                  which jq
                   curl -S -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/atoy3731/charts/releases/tags/$chart_tag 2>/dev/null | jq -r ".assets[]"
                   existing_asset_id=$(curl -S -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/atoy3731/charts/releases/tags/$chart_tag 2>/dev/null | jq -r ".assets[] | select(.name==\"$chart_tag.tgz\")" | jq -r '.id')
                   echo "$existing_asset_id"
