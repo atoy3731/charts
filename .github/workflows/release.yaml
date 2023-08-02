@@ -15,12 +15,9 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: pages
+          path: index
           sparse-checkout: |
             index.yaml
-
-      - name: Copy index.yaml
-        run: |
-          cp ./index.yaml /tmp/index.yaml
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -49,7 +46,7 @@ jobs:
               chart_version=$(helm show chart "$chart_dir" | grep 'version:' | awk '{ print $2 }')
               chart_tag="$chart_name-$chart_version"
               mkdir -p /tmp/charts
-              mv /tmp/index.yaml /tmp/charts/index.yaml
+              mv index/index.yaml /tmp/charts/index.yaml
 
               if [[ $(curl -s -o /dev/null -H "Authorization: Bearer $GITHUB_TOKEN" -w "%{http_code}" https://api.github.com/repos/atoy3731/charts/releases/tags/$chart_tag) == "404" ]]; then
                   echo ""
