@@ -1,40 +1,28 @@
-name: Build Helm Charts
+name: Release Charts
+
 on:
   push:
-    branches:
-      - main  # Replace this with your main branch name
-  pull_request:
-    types:
-      - closed
+    branches:    
+      - '*'         # matches every branch that doesn't contain a '/'
+      - '*/*'       # matches every branch containing a single '/'
+      - '**'   
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Helm
-        uses: azure/setup-helm@v1
+      - name: Checkout
+        uses: actions/checkout@v3
         with:
-          version: 'v3.7.0'  # Replace with the desired Helm version
+          fetch-depth: 0
+          ref: pages
 
-      - name: Build Charts
+      - name: Get index.yaml
         run: |
-          for dir in ./path/to/charts/*; do
-            if [ -d "$dir" ]; then
-              helm lint "$dir"
-              #helm package "$dir" --destination ./path/to/package/output/
-              helm package "$dir" --destination .
-            fi
-          done
+          cp ./index.yaml $HOME/index.yaml
 
-      - name: Commit chart packages
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add .
-          #git add ./path/to/package/output/*
-          git commit -m "Update Helm chart packages [skip ci]"
-          git push
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: release
