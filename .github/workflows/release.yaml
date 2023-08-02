@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: pages
-          path: index
+          path: index_file
           sparse-checkout: |
             index.yaml
 
@@ -38,6 +38,8 @@ jobs:
           sudo mv linux-amd64/helm /usr/local/bin/helm
           sudo apt-get install -y jq
 
+          mkdir -p /tmp/charts
+          mv $HOME/index/index.yaml /tmp/charts/index.yaml
           cd $curdir
 
           for chart_yaml in $(find . -name 'Chart.yaml'); do
@@ -45,8 +47,6 @@ jobs:
               chart_name=$(helm show chart "$chart_dir" | grep 'name:' | awk '{ print $2 }')
               chart_version=$(helm show chart "$chart_dir" | grep 'version:' | awk '{ print $2 }')
               chart_tag="$chart_name-$chart_version"
-              mkdir -p /tmp/charts
-              mv index/index.yaml /tmp/charts/index.yaml
 
               if [[ $(curl -s -o /dev/null -H "Authorization: Bearer $GITHUB_TOKEN" -w "%{http_code}" https://api.github.com/repos/atoy3731/charts/releases/tags/$chart_tag) == "404" ]]; then
                   echo ""
@@ -76,9 +76,10 @@ jobs:
                   asset_download_url=$(echo $asset_response | jq -r '.browser_download_url')
                   echo "chart_tag=$chart_tag"
                   echo "asset_download_url=$asset_download_url"
-                  helm repo index /tmp/charts --url $asset_download_url --merge index.yaml
               fi
           done
+
+          helm repo index /tmp/charts --url $asset_download_url --merge index.yaml
 
       - uses: actions/checkout@v3
         with:
