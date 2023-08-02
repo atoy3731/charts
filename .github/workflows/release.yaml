@@ -84,6 +84,8 @@ jobs:
                   helm repo index /tmp/charts --url $asset_download_url --merge index.yaml
                   rm -f /tmp/charts/$chart_tar
               fi
+
+              cat /tmp/charts/index.yaml
           done
 
           
