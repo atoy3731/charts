@@ -10,7 +10,7 @@ entries:
     type: application
     urls:
     - https://github.com/atoy3731/charts/releases/download/kubeinflight-0.1.13-dev/kubeinflight-0.1.13-dev.tgz
-    version: 0.1.13-dev
+    version: 0.1.13
   kubeups:
   - apiVersion: v2
     appVersion: 1.16.0
