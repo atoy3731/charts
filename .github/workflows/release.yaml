@@ -32,14 +32,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          curl -O https://get.helm.sh/helm-v3.12.2-linux-amd64.tar.gz
-          tar zxvf helm-v3.12.2-linux-amd64.tar.gz
+          curl -S -O https://get.helm.sh/helm-v3.12.2-linux-amd64.tar.gz >/dev/null 2>&1
+          tar zxf helm-v3.12.2-linux-amd64.tar.gz
           chmod +x linux-amd64/helm
           mv linux-amd64/helm ./helm
 
-          curl -O https://github.com/jqlang/jq/releases/download/jq-1.5/jq-linux64
+          curl -O https://github.com/jqlang/jq/releases/download/jq-1.5/jq-linux64 >/dev/null 2>&1
           chmod +x jq-linux64
           mv jq-linux64 ./jq
+
+          pwd
+          ls -la
 
           for chart_yaml in $(find . -name 'Chart.yaml'); do
               chart_dir=$(dirname $chart_yaml)
