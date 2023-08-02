@@ -30,4 +30,4 @@ jobs:
       
       - name: Get index.yaml
         run: |
-          cat ./index.yaml
+          cat ./working/index.yaml
