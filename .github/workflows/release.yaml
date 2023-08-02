@@ -11,18 +11,18 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: pages
+          sparse-checkout: |
+            index.yaml
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: pages
-
+          ref: main
+      
       - name: Get index.yaml
         run: |
-          cp ./index.yaml $HOME/index.yaml
-
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          ref: release
+          cat ./index.yaml
