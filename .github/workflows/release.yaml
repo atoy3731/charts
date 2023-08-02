@@ -85,6 +85,9 @@ jobs:
 
       - name: Commit index.yaml
         run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
           cp /tmp/index.yaml ./index.yaml
           git add index.yaml
           git commit -m "Updated index.yaml @ $(date '+%Y-%m-%dT%T.%3N')"
